@@ -8,6 +8,7 @@
  * https://learnopengl.com/Getting-started/Shaders
  * https://learnopengl.com/code_viewer_gh.php?code=includes/learnopengl/shader_s.h
  * https://learnopengl.com/code_viewer_gh.php?code=src/1.getting_started/3.3.shaders_class/shaders_class.cpp
+ * https://learnopengl.com/Getting-started/Textures
  */
 
 #include <iostream>
@@ -18,6 +19,8 @@
                         // initializing OpenGL and binding inputs.
 #include <glm/glm.hpp>  // GLM is an optimized math library with syntax to similar to OpenGL Shading Language.
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 #include "shader.h"
 
 // Adjust viewport on window resize.
@@ -70,16 +73,20 @@ int main(int argc, char*argv[])
 
     const char* vertexShaderPath = "../shaders/basic_vertex_shader.txt";
     const char* fragmentShaderPath = "../shaders/basic_fragment_shader.txt";
-    Shader shader_program(vertexShaderPath, fragmentShaderPath);
+    const char* texturePath = "../textures/wall.jpg";
+    Shader shader_program(vertexShaderPath, fragmentShaderPath, texturePath);
 
     // Create vertex data for rectangle.
     float vertices[] = {
-        -0.5f,  -0.5f,  0.0f,
+       -0.5f,  -0.5f,   0.0f,
         1.0f,   0.0f,   0.0f,
-        0.5f,   -0.5,   0.0f,
+        0.0f,   0.0f,
+        0.5f,  -0.5f,   0.0f,
         0.0f,   1.0f,   0.0f,
-        0.0f,    0.5,   0.0f,
-        0.0f,   0.0f,   1.0f
+        1.0f,   0.0f,
+        0.0f,   0.5f,   0.0f,
+        0.0f,   0.0f,   1.0f,
+        0.5f,   1.0f
     }; 
 
     // Create a vertex array.
@@ -96,11 +103,14 @@ int main(int argc, char*argv[])
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     // Set the vertex attributes pointers.
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0); 
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3*sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3*sizeof(float)));
     glEnableVertexAttribArray(1);
+
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6*sizeof(float)));
+    glEnableVertexAttribArray(2);
 
     // Unbind vertex buffer.
     glBindBuffer(GL_ARRAY_BUFFER, 0); 

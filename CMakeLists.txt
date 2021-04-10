@@ -35,3 +35,4 @@ install(TARGETS ${BIN} DESTINATION ${CMAKE_INSTALL_PREFIX})
 
 # copt folders to build directory
 file(COPY src/shaders DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY src/textures DESTINATION ${CMAKE_BINARY_DIR})
