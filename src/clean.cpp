@@ -9,6 +9,7 @@
  * https://learnopengl.com/code_viewer_gh.php?code=includes/learnopengl/shader_s.h
  * https://learnopengl.com/code_viewer_gh.php?code=src/1.getting_started/3.3.shaders_class/shaders_class.cpp
  * https://learnopengl.com/Getting-started/Textures
+ * https://learnopengl.com/Getting-started/Transformations
  */
 
 #include <iostream>
@@ -18,6 +19,8 @@
 #include <GLFW/glfw3.h> // GLFW provides a cross-platform interface for creating a graphical context,
                         // initializing OpenGL and binding inputs.
 #include <glm/glm.hpp>  // GLM is an optimized math library with syntax to similar to OpenGL Shading Language.
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -117,6 +120,20 @@ int main(int argc, char*argv[])
     // Unbind vertex array.
     glBindVertexArray(0);
 
+    // Create transformations.
+    // Initialize identity matrix.
+    glm::mat4 transform = glm::mat4(1.0f);
+
+    // Apply transformations.
+    unsigned int transformLoc = glGetUniformLocation(shader_program.ID, "transform");
+    shader_program.setMat4("transform", transform);
+
+    float oldTime = (float)glfwGetTime();
+    float currentTime = (float)glfwGetTime();
+    float deltaTime = currentTime - oldTime;
+
+    float angle = 0.0f;
+
     // Entering Main Loop.
     while(!glfwWindowShouldClose(window))
     {
@@ -128,6 +145,16 @@ int main(int argc, char*argv[])
 
         // Activate shader program.
         shader_program.use();
+
+        // Calculate and apply next angle.
+        currentTime = (float)glfwGetTime();
+        deltaTime = currentTime - oldTime;
+        oldTime = currentTime;
+        angle += glm::radians(deltaTime) / 100;
+        transform = glm::rotate(transform, angle, glm::vec3(0.0f, 0.0f, 1.0f));
+        shader_program.setMat4("transform", transform);
+        
+        // Draw.
         glBindVertexArray(vertexArrayObject);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
