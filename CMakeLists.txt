@@ -33,3 +33,5 @@ list(APPEND BIN ${EXEC})
 # install files to install location
 install(TARGETS ${BIN} DESTINATION ${CMAKE_INSTALL_PREFIX})
 
+# copt folders to build directory
+file(COPY src/shaders DESTINATION ${CMAKE_BINARY_DIR})
