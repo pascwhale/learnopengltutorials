@@ -7,6 +7,7 @@
  * https://learnopengl.com/Getting-started/Transformations
  * https://learnopengl.com/Getting-started/Coordinate-Systems
  * https://learnopengl.com/Getting-started/Camera
+ * https://learnopengl.com/Lighting/Basic-Lighting
  */
 
 #include <iostream>
@@ -51,6 +52,9 @@ float lastFrame = 0.0f;
 // Create a canera object.
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
+// Define variables for light object.
+glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+
 int main(int argc, char*argv[])
 {
     // Initialize GLFW and OpenGL version.
@@ -88,54 +92,57 @@ int main(int argc, char*argv[])
         return -1;
     }
 
-    const char* vertexShaderPath = "../shaders/basic_vertex_shader.txt";
-    const char* fragmentShaderPath = "../shaders/basic_fragment_shader.txt";
-    const char* texturePath = "../textures/wall.jpg";
-    Shader shader_program(vertexShaderPath, fragmentShaderPath, texturePath);
+    const char* vertexShaderPath = "../shaders/basic_lighting_vertex_shader.txt";
+    const char* fragmentShaderPath = "../shaders/basic_lighting_fragment_shader.txt";
+    const char* lightCubeVertexShaderPath = "../shaders/light_cube_vertex_shader.txt";
+    const char* lightCubeFragmentShaderPath = "../shaders/light_cube_fragment_shader.txt";
+    Shader light_shader_program(vertexShaderPath, fragmentShaderPath);
+    Shader light_cube_shader_program(lightCubeVertexShaderPath, lightCubeFragmentShaderPath);
 
     float vertices[] = {
-       -0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,   -1.0f, -1.0f,
-        0.5f, -0.5f, -0.5f,    0.0f,  1.0f,  0.0f,    1.0f, -1.0f,
-        0.5f,  0.5f, -0.5f,    0.0f,  0.0f,  1.0f,    1.0f,  1.0f,
-        0.5f,  0.5f, -0.5f,    0.0f,  0.0f,  1.0f,    1.0f,  1.0f,
-       -0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,   -1.0f,  1.0f,
-       -0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,   -1.0f, -1.0f,
-     
-       -0.5f, -0.5f,  0.5f,    1.0f,  0.0f,  0.0f,   -1.0f, -1.0f,
-        0.5f, -0.5f,  0.5f,    0.0f,  1.0f,  0.0f,    1.0f, -1.0f,
-        0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    1.0f,  1.0f,
-        0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    1.0f,  1.0f,
-       -0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,   -1.0f,  1.0f,
-       -0.5f, -0.5f,  0.5f,    1.0f,  0.0f,  0.0f,   -1.0f, -1.0f,
-     
-       -0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    1.0f,  1.0f,
-       -0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,    1.0f, -1.0f,
-       -0.5f, -0.5f, -0.5f,    0.0f,  0.0f,  1.0f,   -1.0f, -1.0f,
-       -0.5f, -0.5f, -0.5f,    0.0f,  0.0f,  1.0f,   -1.0f, -1.0f,
-       -0.5f, -0.5f,  0.5f,    0.0f,  1.0f,  0.0f,   -1.0f,  1.0f,
-       -0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    1.0f,  1.0f,
-     
-        0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    1.0f,  1.0f,
-        0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,    1.0f, -1.0f,
-        0.5f, -0.5f, -0.5f,    0.0f,  0.0f,  1.0f,   -1.0f, -1.0f,
-        0.5f, -0.5f, -0.5f,    0.0f,  0.0f,  1.0f,   -1.0f, -1.0f,
-        0.5f, -0.5f,  0.5f,    0.0f,  1.0f,  0.0f,   -1.0f,  1.0f,
-        0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    1.0f,  1.0f,
-       
-       -0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,   -1.0f, -1.0f,
-        0.5f, -0.5f, -0.5f,    0.0f,  1.0f,  0.0f,    1.0f, -1.0f,
-        0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    1.0f,  1.0f,
-        0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    1.0f,  1.0f,
-       -0.5f, -0.5f,  0.5f,    0.0f,  1.0f,  0.0f,   -1.0f,  1.0f,
-       -0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,   -1.0f, -1.0f,
-     
-       -0.5f,  0.5f, -0.5f,    1.0f,  0.0f,  0.0f,   -1.0f, -1.0f,
-        0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,    1.0f, -1.0f,
-        0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    1.0f,  1.0f,
-        0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    1.0f,  1.0f,
-       -0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,   -1.0f,  1.0f,
-       -0.5f,  0.5f, -0.5f,    1.0f,  0.0f,  0.0f,   -1.0f, -1.0f,
-};
+        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+
+        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+         0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+
+        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+
+         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+
+        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+
+        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+         0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
+    };
+
 
     // Create a vertex array.
     GLuint vertexArrayObject;
@@ -151,28 +158,38 @@ int main(int argc, char*argv[])
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     // Set the vertex attributes pointers.
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0); 
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3*sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3*sizeof(float)));
     glEnableVertexAttribArray(1);
-
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6*sizeof(float)));
-    glEnableVertexAttribArray(2);
 
     // Unbind vertex buffer.
     glBindBuffer(GL_ARRAY_BUFFER, 0); 
     // Unbind vertex array.
     glBindVertexArray(0);
 
-    // Create and define transformations for different spaces.
-    glm::mat4 model = glm::mat4(1.0f);
-    glm::mat4 projection = glm::mat4(1.0f);
-    projection = glm::perspective(camera.Zoom, (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
+    // Create a vertex array for the light cube.
+    GLuint lightVertexArrayObject;
+    glGenVertexArrays(1, &lightVertexArrayObject);
+    glBindVertexArray(lightVertexArrayObject);
 
-    // Create and define view space to simulate camera.
-    glm::mat4 view = camera.GetViewMatrix();
-    shader_program.setMat4("view", view);
+    // Create a vertex buffer for the light cube.
+    GLuint lightVertexBufferObject;
+    glGenBuffers(1, &lightVertexBufferObject);
+    
+    // Copy vertices in vertex buffer for the light cube.
+    glBindBuffer(GL_ARRAY_BUFFER, lightVertexBufferObject);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    // Set the vertex attributes pointers for the light cube.
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    // Unbind vertex buffer.
+    glBindBuffer(GL_ARRAY_BUFFER, 0); 
+    // Unbind vertex array.
+    glBindVertexArray(0); 
 
     // Enable depth testing.
     glEnable(GL_DEPTH_TEST);
@@ -187,28 +204,44 @@ int main(int argc, char*argv[])
         lastFrame = currentFrame;
 
         // Set default pixel color.
-        glClearColor(0.75f, 0.75f, 0.75f, 1.0f);
+        glClearColor(0.1, 0.1, 0.1, 1.0f);
 
         // Clear color an depth buffer.
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Activate shader program.
-        shader_program.use();
+        light_shader_program.use();
+        light_shader_program.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
+        light_shader_program.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+        light_shader_program.setVec3("lightPos", lightPos);
+        light_shader_program.setVec3("viewPos", camera.Position);
 
-        // Calculate camera position.
-        model = glm::rotate(model, deltaTime, glm::vec3(0.0f, 1.0f, 0.0f));
-        view = camera.GetViewMatrix();
-        projection = glm::perspective(camera.Zoom, (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
+        // Define view and projection transformations.
+        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
+        glm::mat4 view = camera.GetViewMatrix();
+        light_shader_program.setMat4("projection", projection);
+        light_shader_program.setMat4("view", view);
 
-        
-        // Send space transformations to shader.
-        shader_program.setMat4("model", model);
-        shader_program.setMat4("view", view);
-        shader_program.setMat4("projection", projection);
-        
-        // Draw.
+        // Define world transformation.
+        glm::mat4 model = glm::mat4(1.0f);
+        light_shader_program.setMat4("model", model);
+
+        // Render an object.
         glBindVertexArray(vertexArrayObject);
-        glDrawArrays(GL_TRIANGLES, 0, size(vertices)/8);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+        // Draw light cube.
+        light_cube_shader_program.use();
+        light_cube_shader_program.setMat4("projection", projection);
+        light_cube_shader_program.setMat4("view", view);
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, lightPos);
+        model = glm::scale(model, glm::vec3(0.2f));
+        light_cube_shader_program.setMat4("model", model);
+
+        glBindVertexArray(lightVertexArrayObject);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
         // Process user input.
         processInput(window);
