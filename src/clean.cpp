@@ -1,15 +1,11 @@
 /*
  * Sources
  * https://learnopengl.com/Getting-started/Hello-Window
- * https://learnopengl.com/code_viewer_gh.php?code=src/1.getting_started/1.2.hello_window_clear/hello_window_clear.cpp
  * https://learnopengl.com/Getting-started/Hello-Triangle
- * https://learnopengl.com/code_viewer_gh.php?code=src/1.getting_started/2.1.hello_triangle/hello_triangle.cpp
- * https://learnopengl.com/code_viewer_gh.php?code=src/1.getting_started/2.2.hello_triangle_indexed/hello_triangle_indexed.cpp
  * https://learnopengl.com/Getting-started/Shaders
- * https://learnopengl.com/code_viewer_gh.php?code=includes/learnopengl/shader_s.h
- * https://learnopengl.com/code_viewer_gh.php?code=src/1.getting_started/3.3.shaders_class/shaders_class.cpp
  * https://learnopengl.com/Getting-started/Textures
  * https://learnopengl.com/Getting-started/Transformations
+ * https://learnopengl.com/Getting-started/Coordinate-Systems
  */
 
 #include <iostream>
@@ -79,18 +75,49 @@ int main(int argc, char*argv[])
     const char* texturePath = "../textures/wall.jpg";
     Shader shader_program(vertexShaderPath, fragmentShaderPath, texturePath);
 
-    // Create vertex data for rectangle.
     float vertices[] = {
-       -0.5f,  -0.5f,   0.0f,
-        1.0f,   0.0f,   0.0f,
-        0.0f,   0.0f,
-        0.5f,  -0.5f,   0.0f,
-        0.0f,   1.0f,   0.0f,
-        1.0f,   0.0f,
-        0.0f,   0.5f,   0.0f,
-        0.0f,   0.0f,   1.0f,
-        0.5f,   1.0f
-    }; 
+       -0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,   -1.0f, -1.0f,
+        0.5f, -0.5f, -0.5f,    0.0f,  1.0f,  0.0f,    1.0f, -1.0f,
+        0.5f,  0.5f, -0.5f,    0.0f,  0.0f,  1.0f,    1.0f,  1.0f,
+        0.5f,  0.5f, -0.5f,    0.0f,  0.0f,  1.0f,    1.0f,  1.0f,
+       -0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,   -1.0f,  1.0f,
+       -0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,   -1.0f, -1.0f,
+     
+       -0.5f, -0.5f,  0.5f,    1.0f,  0.0f,  0.0f,   -1.0f, -1.0f,
+        0.5f, -0.5f,  0.5f,    0.0f,  1.0f,  0.0f,    1.0f, -1.0f,
+        0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    1.0f,  1.0f,
+        0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    1.0f,  1.0f,
+       -0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,   -1.0f,  1.0f,
+       -0.5f, -0.5f,  0.5f,    1.0f,  0.0f,  0.0f,   -1.0f, -1.0f,
+     
+       -0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    1.0f,  1.0f,
+       -0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,    1.0f, -1.0f,
+       -0.5f, -0.5f, -0.5f,    0.0f,  0.0f,  1.0f,   -1.0f, -1.0f,
+       -0.5f, -0.5f, -0.5f,    0.0f,  0.0f,  1.0f,   -1.0f, -1.0f,
+       -0.5f, -0.5f,  0.5f,    0.0f,  1.0f,  0.0f,   -1.0f,  1.0f,
+       -0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    1.0f,  1.0f,
+     
+        0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    1.0f,  1.0f,
+        0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,    1.0f, -1.0f,
+        0.5f, -0.5f, -0.5f,    0.0f,  0.0f,  1.0f,   -1.0f, -1.0f,
+        0.5f, -0.5f, -0.5f,    0.0f,  0.0f,  1.0f,   -1.0f, -1.0f,
+        0.5f, -0.5f,  0.5f,    0.0f,  1.0f,  0.0f,   -1.0f,  1.0f,
+        0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    1.0f,  1.0f,
+       
+       -0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,   -1.0f, -1.0f,
+        0.5f, -0.5f, -0.5f,    0.0f,  1.0f,  0.0f,    1.0f, -1.0f,
+        0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    1.0f,  1.0f,
+        0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    1.0f,  1.0f,
+       -0.5f, -0.5f,  0.5f,    0.0f,  1.0f,  0.0f,   -1.0f,  1.0f,
+       -0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,   -1.0f, -1.0f,
+     
+       -0.5f,  0.5f, -0.5f,    1.0f,  0.0f,  0.0f,   -1.0f, -1.0f,
+        0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,    1.0f, -1.0f,
+        0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    1.0f,  1.0f,
+        0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    1.0f,  1.0f,
+       -0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,   -1.0f,  1.0f,
+       -0.5f,  0.5f, -0.5f,    1.0f,  0.0f,  0.0f,   -1.0f, -1.0f,
+};
 
     // Create a vertex array.
     GLuint vertexArrayObject;
@@ -124,9 +151,13 @@ int main(int argc, char*argv[])
     // Initialize identity matrix.
     glm::mat4 transform = glm::mat4(1.0f);
 
-    // Apply transformations.
-    unsigned int transformLoc = glGetUniformLocation(shader_program.ID, "transform");
-    shader_program.setMat4("transform", transform);
+    // Create and define transformations for different spaces.
+    glm::mat4 model = glm::mat4(1.0f);
+    glm::mat4 view = glm::mat4(1.0f);
+    glm::mat4 projection = glm::mat4(1.0f);
+    model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    view  = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+    projection = glm::perspective(glm::radians(45.0f), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
 
     float oldTime = (float)glfwGetTime();
     float currentTime = (float)glfwGetTime();
@@ -134,14 +165,17 @@ int main(int argc, char*argv[])
 
     float angle = 0.0f;
 
+    // Enable depth testing.
+    glEnable(GL_DEPTH_TEST);
+
     // Entering Main Loop.
     while(!glfwWindowShouldClose(window))
     {
         // Set default pixel color.
         glClearColor(0.75f, 0.75f, 0.75f, 1.0f);
 
-        // Reset color of each pixel to glClearColor.
-        glClear(GL_COLOR_BUFFER_BIT);
+        // Clear color an depth buffer.
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Activate shader program.
         shader_program.use();
@@ -154,9 +188,14 @@ int main(int argc, char*argv[])
         transform = glm::rotate(transform, angle, glm::vec3(0.0f, 0.0f, 1.0f));
         shader_program.setMat4("transform", transform);
         
+        // Send space transformations to shader.
+        shader_program.setMat4("model", model);
+        shader_program.setMat4("view", view);
+        shader_program.setMat4("projection", projection);
+        
         // Draw.
         glBindVertexArray(vertexArrayObject);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawArrays(GL_TRIANGLES, 0, size(vertices)/8);
 
         // Process user input.
         processInput(window);
